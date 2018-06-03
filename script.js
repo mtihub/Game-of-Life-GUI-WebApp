@@ -29,8 +29,10 @@ var hasStarted = false;
 
 var startButton = document.querySelector('#startButton');
 startButton.addEventListener('click', function() {
-    hasStarted = true;
-    interval = setInterval(startLife, 10);
+    if (hasStarted == false) {
+    	hasStarted = true;
+    	interval = setInterval(startLife, 10);
+    }
     //startLife();
 });
 
