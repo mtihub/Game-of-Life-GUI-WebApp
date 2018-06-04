@@ -20,25 +20,30 @@ var currentBoard = 'b1';
 var currentPtr = b1;
 var nextPtr    = b2;
 
-var isMousePressed = false;
+var isMousePressed = false;	// Detect continuous mouse press
 
 createTable(row, col);
 
-var interval;
-var hasStarted = false;
+var interval;				// set and clear interval
+var lockStart = true;		// Prevent overlapping calls to startLife
 
+
+//-------------------------------------------------------------------------------------------------------
+//  Add Actions
+//-------------------------------------------------------------------------------------------------------
 var startButton = document.querySelector('#startButton');
 startButton.addEventListener('click', function() {
-    if (hasStarted == false) {
-    	hasStarted = true;
-    	interval = setInterval(startLife, 10);
+    if (lockStart == true) {
+    	lockStart = false;
+    	interval = setInterval(startLife, 50);
+    	//startLife();
     }
-    //startLife();
+    
 });
 
 var stopButton = document.querySelector('#stopButton');
 stopButton.addEventListener('click', function() {
-    hasStarted = false;
+    lockStart = true;
     clearInterval(interval);
 });
 
@@ -55,7 +60,7 @@ spaceShipSetup.addEventListener('click', function() { addPattern('spaceShip'); }
 
 var explosionSetup = document.querySelector('#explostionSetup');
 explostionSetup.addEventListener('click', function() { addPattern('explosion'); });
-
+//-------------------------------------------------------------------------------------------------------
 
 
 
@@ -63,18 +68,22 @@ explostionSetup.addEventListener('click', function() { addPattern('explosion'); 
 //  Life Functions
 //-------------------------------------------------------------------------------------------------------
 function startLife() {
-    evolve(currentPtr, nextPtr);
-        
-    if (currentBoard == 'b1') {
-        currentBoard = 'b2';
-        currentPtr = b2;
-        nextPtr    = b1;
-    }
-    else {
-        currentBoard = 'b1';
-        currentPtr = b1;
-        nextPtr    = b2;
-    }
+	if (lockStart == false) {
+		lockStart = true;
+	    evolve(currentPtr, nextPtr);
+	        
+	    if (currentBoard == 'b1') {
+	        currentBoard = 'b2';
+	        currentPtr = b2;
+	        nextPtr    = b1;
+	    }
+	    else {
+	        currentBoard = 'b1';
+	        currentPtr = b1;
+	        nextPtr    = b2;
+	    }
+	    lockStart = false;
+	}
 }
 
 function evolve(current, next) {
@@ -89,7 +98,7 @@ function evolve(current, next) {
                     next[i][j] = 1;
                     getSquare(i,j).style.backgroundColor = 'black';
                 }
-                else {
+                else {	
                     next[i][j] = 0;
                     getSquare(i,j).style.backgroundColor = 'white';
                 }
@@ -290,8 +299,8 @@ function getSquare(i, j) {
 //  Add Pattern Function
 //-------------------------------------------------------------------------------------------------------
 function addPattern(pattern) {
-    var turnOnSim = hasStarted;
-    if (hasStarted) {
+    var lockStatus = lockStart;
+    if (lockStart == false) {
         stopButton.click();
     }
 
@@ -409,7 +418,7 @@ function addPattern(pattern) {
     }
     print(currentPtr);
 
-    if (turnOnSim) {
+    if (lockStatus == false) {
         startButton.click();
     }
 }
